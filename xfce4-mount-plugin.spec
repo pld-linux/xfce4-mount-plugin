@@ -9,6 +9,8 @@ Source0:	http://download.berlios.de/xfce-goodies/%{name}-%{version}.tar.gz
 URL:		http://xfce-goodies.berlios.de/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	libstdc++-devel
+BuildRequires:	pkgconfig
 BuildRequires:	xfce4-panel-devel >= 4.1.90
 Requires:	xfce4-panel >= 4.1.90
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -31,6 +33,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+rm -f $RPM_BUILD_ROOT%{_libdir}/xfce4/panel-plugins/*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
