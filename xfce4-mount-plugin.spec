@@ -3,7 +3,7 @@ Summary(pl):	Narzêdzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
 Version:	0.1
 Release:	0.1
-License:	GPL
+License:	GPL v2+
 Group:		X11/Applications	
 Source0:	http://download.berlios.de/xfce-goodies/%{name}-%{version}.tar.gz
 # Source0-md5:	2dc989aadd349d6d248cd3d64cdfb93a
