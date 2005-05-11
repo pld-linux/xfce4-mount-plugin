@@ -1,12 +1,12 @@
 Summary:	mount/umount utility for Xfce panel
 Summary(pl):	Narzêdzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
-Version:	0.1
-Release:	0.1
+Version:	0.2
+Release:	1
 License:	GPL v2+
 Group:		X11/Applications	
 Source0:	http://download.berlios.de/xfce-goodies/%{name}-%{version}.tar.gz
-# Source0-md5:	2dc989aadd349d6d248cd3d64cdfb93a
+# Source0-md5:	ccb70ba622f6a0b9d5020f666896ddc4
 URL:		http://xfce-goodies.berlios.de/
 BuildRequires:	autoconf
 BuildRequires:	automake
