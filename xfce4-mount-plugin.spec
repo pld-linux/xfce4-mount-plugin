@@ -4,7 +4,7 @@ Name:		xfce4-mount-plugin
 Version:	0.3.2
 Release:	1
 License:	GPL v2+
-Group:		X11/Applications	
+Group:		X11/Applications
 Source0:	http://download.berlios.de/xfce-goodies/%{name}-%{version}.tar.gz
 # Source0-md5:	0bcf4717a78d70e81f1b332535a87e74
 URL:		http://xfce-goodies.berlios.de/
