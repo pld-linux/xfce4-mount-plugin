@@ -5,9 +5,9 @@ Version:	0.3.2
 Release:	1
 License:	GPL v2+
 Group:		X11/Applications
-Source0:	http://download.berlios.de/xfce-goodies/%{name}-%{version}.tar.gz
+Source0:	http://goodies.xfce.org/releases/xfce4-mount-plugin/%{name}-%{version}.tar.gz
 # Source0-md5:	0bcf4717a78d70e81f1b332535a87e74
-URL:		http://xfce-goodies.berlios.de/
+URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gtk+2 >= 2:2.6.0
