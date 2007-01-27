@@ -1,21 +1,22 @@
 Summary:	mount/umount utility for Xfce panel
 Summary(pl):	Narzêdzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
-Version:	0.3.2
+Version:	0.4.8
 Release:	1
 License:	GPL v2+
 Group:		X11/Applications
-Source0:	http://goodies.xfce.org/releases/xfce4-mount-plugin/%{name}-%{version}.tar.gz
-# Source0-md5:	0bcf4717a78d70e81f1b332535a87e74
+Source0:	http://goodies.xfce.org/releases/xfce4-mount-plugin/%{name}-%{version}.tar.bz2
+# Source0-md5:	1333adf1c76d8f8b4c6f58bbcf43b6c6
 URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	gtk+2 >= 2:2.6.0
-BuildRequires:	libstdc++-devel
+BuildRequires:	intltool
 BuildRequires:	pkgconfig
-BuildRequires:	xfce4-panel-devel >= 4.1.90
-Requires:	gtk+2 >= 2:2.6.0
-Requires:	xfce4-panel >= 4.1.90
+BuildRequires:	xfce4-dev-tools >= 4.4.0
+BuildRequires:	xfce4-panel-devel >= 4.4.0
+Requires(post,postun):	gtk+2
+Requires(post,postun):	hicolor-icon-theme
+Requires:	xfce4-panel >= 4.4.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -30,6 +31,11 @@ miejsca dostêpnego na urz±dzeniu.
 %setup -q
 
 %build
+%{__intltoolize}
+%{__aclocal}
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure \
 	--disable-static
 
@@ -41,12 +47,22 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/xfce4/panel-plugins/*.la
+mv -f $RPM_BUILD_ROOT%{_datadir}/locale/{no,nb}
+
+%find_lang %{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%post
+%update_icon_cache hicolor
+
+%postun
+%update_icon_cache hicolor
+
+%files -f %{name}.lang
 %defattr(644,root,root,755)
-%doc AUTHORS README
-%attr(755,root,root) %{_libdir}/xfce4/panel-plugins/*.so
+%doc AUTHORS ChangeLog README TODO
+%attr(755,root,root) %{_libdir}/xfce4/panel-plugins/xfce4-mount-plugin
+%{_datadir}/xfce4/panel-plugins/xfce4-mount-plugin.desktop
+%{_iconsdir}/hicolor/*/apps/*.*
