@@ -1,5 +1,5 @@
 Summary:	mount/umount utility for Xfce panel
-Summary(pl):	Narzêdzie do montowania/odmontowywania dla panelu Xfce
+Summary(pl.UTF-8):   NarzÄ™dzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
 Version:	0.4.8
 Release:	1
@@ -23,9 +23,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 This plugin let's you easy mount/umount and check space uvailable on
 destdevice.
 
-%description -l pl
-Ta wtyczka umo¿liwia ³atwe montowanie/odmontowywanie oraz sprawdzanie
-miejsca dostêpnego na urz±dzeniu.
+%description -l pl.UTF-8
+Ta wtyczka umoÅ¼liwia Å‚atwe montowanie/odmontowywanie oraz sprawdzanie
+miejsca dostÄ™pnego na urzÄ…dzeniu.
 
 %prep
 %setup -q
