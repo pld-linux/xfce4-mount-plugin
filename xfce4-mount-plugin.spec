@@ -1,5 +1,5 @@
 Summary:	mount/umount utility for Xfce panel
-Summary(pl.UTF-8):   Narzędzie do montowania/odmontowywania dla panelu Xfce
+Summary(pl.UTF-8):	Narzędzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
 Version:	0.4.8
 Release:	1
