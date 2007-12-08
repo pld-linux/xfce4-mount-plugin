@@ -1,17 +1,19 @@
 Summary:	mount/umount utility for Xfce panel
 Summary(pl.UTF-8):	Narzędzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
-Version:	0.5.1
+Version:	0.5.4
 Release:	1
 License:	GPL v2+
 Group:		X11/Applications
 Source0:	http://goodies.xfce.org/releases/xfce4-mount-plugin/%{name}-%{version}.tar.bz2
-# Source0-md5:	2e03e6b9de2fb6d8f58244d620e8c121
+# Source0-md5:	06ac87a09993af4624776022be9ffb13
+Patch0:		%{name}-locale-names.patch
 URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	intltool
 BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.311
 BuildRequires:	xfce4-dev-tools >= 4.4.0
 BuildRequires:	xfce4-panel-devel >= 4.4.0
 Requires(post,postun):	gtk+2
@@ -29,6 +31,10 @@ miejsca dostępnego na urządzeniu.
 
 %prep
 %setup -q
+%patch0 -p1
+
+mv -f po/{nb_NO,nb}.po
+mv -f po/{pt_PT,pt}.po
 
 %build
 %{__intltoolize}
@@ -46,8 +52,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-mv -f $RPM_BUILD_ROOT%{_datadir}/locale/{no,nb}
 
 %find_lang %{name}
 
