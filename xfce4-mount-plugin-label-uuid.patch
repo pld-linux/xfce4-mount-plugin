@@ -1,0 +1,21 @@
+--- xfce4-mount-plugin-0.5.5/panel-plugin/devices.c~	2010-11-13 20:45:44.969354996 +0100
++++ xfce4-mount-plugin-0.5.5/panel-plugin/devices.c	2010-11-13 21:02:11.907383494 +0100
+@@ -295,7 +295,8 @@
+             retval = ERROR;
+         }
+ 
+-        if (disk_check_mounted(pdisk->device))
++        if (disk_check_mounted(pdisk->device) ||
++		disk_check_mounted(pdisk->mount_point))
+             retval = ERROR;
+ 
+         g_free (cmd);
+@@ -331,7 +331,7 @@
+     for (pfstab = getfsent(); pfstab!=NULL; pfstab = getfsent())
+     {
+         has_valid_mount_device =
+-                        g_str_has_prefix(pfstab->fs_spec, "/dev/") ||  g_str_has_prefix(pfstab->fs_spec, "UUID=");
++                        g_str_has_prefix(pfstab->fs_spec, "/dev/") || g_str_has_prefix(pfstab->fs_spec, "UUID=") || g_str_has_prefix(pfstab->fs_spec, "LABEL=");
+ 
+         if (include_NFSs)
+             has_valid_mount_device = has_valid_mount_device |
