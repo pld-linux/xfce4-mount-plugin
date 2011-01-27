@@ -9,6 +9,8 @@ Source0:	http://archive.xfce.org/src/panel-plugins/xfce4-mount-plugin/0.5/%{name
 # Source0-md5:	1d237468fe23e4e8c29195d9b99c4c5d
 Patch0:		%{name}-label-uuid.patch
 URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
+BuildRequires:	gettext-devel
+BuildRequires:	perl-XML-Parser
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.311
 BuildRequires:	xfce4-dev-tools >= 4.4.0
