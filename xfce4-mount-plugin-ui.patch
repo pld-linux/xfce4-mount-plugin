@@ -1,0 +1,357 @@
+diff -urN xfce4-mount-plugin-0.5.5-orig/config.h.in xfce4-mount-plugin-0.5.5/config.h.in
+--- xfce4-mount-plugin-0.5.5-orig/config.h.in	2008-05-17 11:54:45.000000000 +0200
++++ xfce4-mount-plugin-0.5.5/config.h.in	2011-03-01 13:06:22.000000000 +0100
+@@ -114,21 +114,39 @@
+ /* Define to the one symbol short name of this package. */
+ #undef PACKAGE_TARNAME
+ 
++/* Define to the home page for this package. */
++#undef PACKAGE_URL
++
+ /* Define to the version of this package. */
+ #undef PACKAGE_VERSION
+ 
+ /* Define to 1 if you have the ANSI C header files. */
+ #undef STDC_HEADERS
+ 
+-/* Version number of package */
+-#undef VERSION
+-
+-/* Define to 1 if on AIX 3.
+-   System headers sometimes define this.
+-   We just want to avoid a redefinition error message.  */
++/* Enable extensions on AIX 3, Interix.  */
+ #ifndef _ALL_SOURCE
+ # undef _ALL_SOURCE
+ #endif
++/* Enable GNU extensions on systems that have them.  */
++#ifndef _GNU_SOURCE
++# undef _GNU_SOURCE
++#endif
++/* Enable threading extensions on Solaris.  */
++#ifndef _POSIX_PTHREAD_SEMANTICS
++# undef _POSIX_PTHREAD_SEMANTICS
++#endif
++/* Enable extensions on HP NonStop.  */
++#ifndef _TANDEM_SOURCE
++# undef _TANDEM_SOURCE
++#endif
++/* Enable general extensions on Solaris.  */
++#ifndef __EXTENSIONS__
++# undef __EXTENSIONS__
++#endif
++
++
++/* Version number of package */
++#undef VERSION
+ 
+ /* Define to 1 if on MINIX. */
+ #undef _MINIX
+diff -urN xfce4-mount-plugin-0.5.5-orig/configure.ac xfce4-mount-plugin-0.5.5/configure.ac
+--- xfce4-mount-plugin-0.5.5-orig/configure.ac	2008-05-17 11:48:10.000000000 +0200
++++ xfce4-mount-plugin-0.5.5/configure.ac	2011-03-01 13:06:19.850236738 +0100
+@@ -59,7 +59,7 @@
+ AC_SUBST(SOLLIBS)
+ 
+ dnl configure the panel plugin
+-XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.3.20])
++XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-1], [4.8.0])
+ XDT_CHECK_PACKAGE([LIBXFCE4PANEL], [libxfce4panel-1.0], [4.3.20])
+ 
+ dnl Check for i18n support
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/button.c xfce4-mount-plugin-0.5.5/panel-plugin/button.c
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/button.c	1970-01-01 01:00:00.000000000 +0100
++++ xfce4-mount-plugin-0.5.5/panel-plugin/button.c	2011-03-01 23:11:35.243038557 +0100
+@@ -0,0 +1,83 @@
++/* $Id$
++ * 
++ * Copyright 2002-2004 Jasper Huijsmans (jasper@xfce.org)
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#include <math.h>
++
++#include <gdk/gdk.h>
++#include <gtk/gtkbutton.h>
++
++#include <libxfce4panel/libxfce4panel.h>
++
++#include "button.h"
++
++G_DEFINE_TYPE (MountButton, mount_button, GTK_TYPE_BUTTON)
++
++/* workaround for http://bugzilla.gnome.org/show_bug.cgi?id=142417 */
++static void
++_style_set_cb(GtkWidget *w, GtkStyle *prev_style, gpointer user_data)
++{
++    GtkStyle *style;
++
++    if (MOUNTBUTTON (w)->image)
++    {
++        style = gtk_rc_get_style_by_paths (gtk_settings_get_default (),
++            "GtkButton", "GtkButton", GTK_TYPE_BUTTON);
++        gtk_widget_set_style (MOUNTBUTTON (w)->image, style);
++    }
++}
++
++static void
++mount_button_class_init (MountButtonClass * class)
++{
++}
++
++static void
++mount_button_init (MountButton *button)
++{
++    button->image = xfce_panel_image_new ();
++    gtk_widget_show (button->image);
++    gtk_container_add (GTK_CONTAINER (button), button->image);
++
++    button->icon_width = button->icon_height = -1;
++    button->pb = NULL;
++}
++
++GtkWidget *
++mount_button_new_from_pixbuf (GdkPixbuf * pixbuf)
++{
++    GtkWidget *button = GTK_WIDGET (g_object_new (mount_button_get_type (), NULL));
++
++    g_signal_connect (G_OBJECT (button), "style-set",
++        G_CALLBACK (_style_set_cb), NULL);
++
++    mount_button_set_pixbuf (MOUNTBUTTON (button), pixbuf);
++
++    return button;
++}
++
++void
++mount_button_set_pixbuf (MountButton *button, GdkPixbuf *pixbuf)
++{
++    g_return_if_fail (button != NULL);
++    g_return_if_fail (IS_MOUNTBUTTON (button));
++
++    xfce_panel_image_set_from_pixbuf (XFCE_PANEL_IMAGE (button->image),
++	    			       pixbuf);
++}
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/button.h xfce4-mount-plugin-0.5.5/panel-plugin/button.h
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/button.h	1970-01-01 01:00:00.000000000 +0100
++++ xfce4-mount-plugin-0.5.5/panel-plugin/button.h	2011-03-01 23:09:41.311038550 +0100
+@@ -0,0 +1,55 @@
++/*  xfce4
++ *  Copyright (C) 2002 Olivier Fourdan (fourdan@xfce.org)
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifndef __XFCE_ICONBUTTON_H__
++#define __XFCE_ICONBUTTON_H__
++
++#include <gdk/gdk.h>
++#include <gtk/gtkbutton.h>
++#include <gtk/gtkenums.h>
++
++G_BEGIN_DECLS
++
++#define MOUNTBUTTON(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, mount_button_get_type (), MountButton)
++#define MOUNTBUTTON_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, mount_button_get_type (), MountButtonClass)
++#define IS_MOUNTBUTTON(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, mount_button_get_type ())
++
++typedef struct
++{
++    GtkButton button;
++
++    GtkWidget *image;
++    GdkPixbuf *pb;
++
++    gint icon_width;
++    gint icon_height;
++} MountButton;
++
++typedef struct
++{
++    GtkButtonClass parent_class;
++} MountButtonClass;
++
++GtkType mount_button_get_type (void);
++GtkWidget *mount_button_new_from_pixbuf (GdkPixbuf *pb);
++void mount_button_set_pixbuf (MountButton *button, GdkPixbuf *pixbuf);
++
++G_END_DECLS
++
++#endif				/* __XFCE_ICONBUTTON_H__ */
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/devices.c xfce4-mount-plugin-0.5.5/panel-plugin/devices.c
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/devices.c	2011-03-01 11:20:32.211067640 +0100
++++ xfce4-mount-plugin-0.5.5/panel-plugin/devices.c	2011-03-01 18:59:24.081602403 +0100
+@@ -27,10 +27,9 @@
+ #include <string.h>
+ #include <sys/vfs.h>
+ 
+-#include <libxfce4panel/xfce-panel-plugin.h>
++#include <libxfce4panel/libxfce4panel.h>
+ #include <libxfce4util/libxfce4util.h>
+-#include <libxfcegui4/xfce-exec.h>
+-#include <libxfcegui4/dialogs.h>
++#include <libxfce4ui/libxfce4ui.h>
+ 
+ #include "devices.h"
+ 
+@@ -240,9 +239,9 @@
+         g_printf ("cmd: '%s'\n", cmd);
+         #endif
+ 
+-        val = xfce_exec (cmd, FALSE, FALSE, &error);
++        val = xfce_spawn_command_line_on_screen(gdk_screen_get_default(), cmd, FALSE, FALSE, &error);
+         if (!val)
+-            xfce_err (_("Mount Plugin: Error executing command."));
++            xfce_dialog_show_error (NULL, NULL, _("Mount Plugin: Error executing command."));
+ 
+         g_free(cmd);
+         g_free(tmp);
+@@ -288,10 +287,10 @@
+         g_printf ("cmd: '%s'\n", tmp);
+         #endif
+ 
+-        val = xfce_exec_sync (tmp, FALSE, FALSE, &error);
++        val = xfce_spawn_command_line_on_screen(gdk_screen_get_default(), tmp, FALSE, FALSE, &error);
+ 
+         if  (!val) {
+-            xfce_err (_("Mount Plugin: Error executing command."));
++            xfce_dialog_show_error (NULL, NULL, _("Mount Plugin: Error executing command."));
+             retval = ERROR;
+         }
+ 
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/Makefile.am xfce4-mount-plugin-0.5.5/panel-plugin/Makefile.am
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/Makefile.am	2007-12-17 22:32:00.000000000 +0100
++++ xfce4-mount-plugin-0.5.5/panel-plugin/Makefile.am	2011-03-01 23:03:22.380514551 +0100
+@@ -4,6 +4,8 @@
+ LIBS = @LIBS@ @SOLLIBS@
+ 
+ xfce4_mount_plugin_SOURCES =                                \
++	button.c                                           \
++	button.h                                           \
+ 	devices.c                                           \
+ 	devices.h                                           \
+ 	mount-plugin.c  				\
+@@ -14,12 +16,12 @@
+ xfce4_mount_plugin_CFLAGS =			         \
+ 	-DPACKAGE_LOCALE_DIR=\"$(localedir)\"               \
+ 	@LIBXFCE4PANEL_CFLAGS@				\
+-	@LIBXFCEGUI4_CFLAGS@
++	@LIBXFCE4UI_CFLAGS@
+ 
+ xfce4_mount_plugin_LDADD =                                \
+ 	@SOLLIBS@                                   			\
+ 	@LIBXFCE4PANEL_LIBS@				\
+-	@LIBXFCEGUI4_LIBS@
++	@LIBXFCE4UI_LIBS@
+ 
+ # .desktop file
+ #
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/mount-plugin.c xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.c
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/mount-plugin.c	2008-05-17 11:48:59.000000000 +0200
++++ xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.c	2011-03-01 23:12:22.510038550 +0100
+@@ -20,6 +20,7 @@
+ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+ #include "mount-plugin.h"
++#include "button.h"
+ 
+ static void
+ on_message_dialog_response (GtkWidget *widget, gpointer *data)
+@@ -519,7 +520,7 @@
+     g_assert (mounter->icon!=NULL);
+ 
+     mounter->button_pb = gdk_pixbuf_new_from_file (mounter->icon, NULL);
+-    mounter->button = xfce_iconbutton_new_from_pixbuf (mounter->button_pb);
++    mounter->button = mount_button_new_from_pixbuf (mounter->button_pb);
+     gtk_button_set_relief (GTK_BUTTON(mounter->button), GTK_RELIEF_NONE);
+ 
+     gtk_tooltips_set_tip (tooltips, GTK_WIDGET(mounter->button), _("devices"),
+@@ -606,7 +607,7 @@
+                    PACKAGE_DATA_DIR );
+ 
+        mt->button_pb = gdk_pixbuf_new_from_file (mt->icon, NULL);
+-       xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(mt->button), mt->button_pb);
++       mount_button_set_pixbuf (MOUNTBUTTON(mt->button), mt->button_pb);
+ 
+     TRACE ("leaves mounter_apply_options");
+ }
+@@ -681,25 +682,20 @@
+ static void
+ mounter_create_options (XfcePanelPlugin *plugin, t_mounter *mt)
+ {
++    GtkWidget *dlg;
+ 
+     TRACE ("enters mounter_create_options");
+ 
+     xfce_panel_plugin_block_menu (plugin);
+ 
+-    GtkWidget *dlg, *header;
+-    dlg = gtk_dialog_new_with_buttons (_("Edit Properties"),
++    dlg = xfce_titled_dialog_new_with_buttons (_("Edit Properties"),
+                 GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (plugin))),
+                 GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
+                 GTK_STOCK_CLOSE, GTK_RESPONSE_OK, NULL);
+ 
+     gtk_container_set_border_width (GTK_CONTAINER (dlg), 2);
+ 
+-    header = xfce_create_header (NULL, _("Mount devices"));
+-    gtk_widget_set_size_request (GTK_BIN (header)->child, -1, 32);
+-    gtk_container_set_border_width (GTK_CONTAINER (header), BORDER - 2);
+-    gtk_widget_show (header);
+-    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), header, FALSE,
+-                        TRUE, 0);
++    xfce_titled_dialog_set_subtitle (XFCE_TITLED_DIALOG(dlg),  _("Mount devices"));
+ 
+     GtkWidget *vbox;
+     t_mounter_dialog * md;
+@@ -1009,7 +1005,7 @@
+     mounter_read_config (plugin, mounter);
+ 
+     mounter->button_pb = gdk_pixbuf_new_from_file (mounter->icon, NULL);
+-       xfce_iconbutton_set_pixbuf (XFCE_ICONBUTTON(mounter->button),
++       mount_button_set_pixbuf (MOUNTBUTTON(mounter->button),
+                                    mounter->button_pb);
+ 
+     g_signal_connect (plugin, "free-data", G_CALLBACK (mounter_free), mounter);
+diff -urN xfce4-mount-plugin-0.5.5-orig/panel-plugin/mount-plugin.h xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.h
+--- xfce4-mount-plugin-0.5.5-orig/panel-plugin/mount-plugin.h	2008-05-17 11:49:09.000000000 +0200
++++ xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.h	2011-03-01 13:06:19.854238738 +0100
+@@ -35,9 +35,9 @@
+ #endif
+ 
+ #include <gtk/gtk.h>
+-#include <libxfce4panel/xfce-panel-plugin.h>
++#include <libxfce4panel/libxfce4panel.h>
+ #include <libxfce4util/libxfce4util.h>
+-#include <libxfcegui4/libxfcegui4.h>
++#include <libxfce4ui/libxfce4ui.h>
+ 
+ #include <string.h>
+ 
