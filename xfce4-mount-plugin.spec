@@ -2,13 +2,14 @@ Summary:	mount/umount utility for Xfce panel
 Summary(pl.UTF-8):	Narzędzie do montowania/odmontowywania dla panelu Xfce
 Name:		xfce4-mount-plugin
 Version:	0.5.5
-Release:	5
+Release:	6
 License:	GPL v2+
 Group:		X11/Applications
 Source0:	http://archive.xfce.org/src/panel-plugins/xfce4-mount-plugin/0.5/%{name}-%{version}.tar.bz2
 # Source0-md5:	1d237468fe23e4e8c29195d9b99c4c5d
 Patch0:		%{name}-label-uuid.patch
 Patch1:		%{name}-ui.patch
+Patch2:		%{name}-position.patch
 URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
 BuildRequires:	autoconf >= 2.63
 BuildRequires:	automake
@@ -38,6 +39,7 @@ miejsca dostępnego na urządzeniu.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__intltoolize}
@@ -46,8 +48,7 @@ miejsca dostępnego na urządzeniu.
 %{__autoconf}
 %{__autoheader}
 %{__automake}
-%configure \
-	--disable-static
+%configure
 
 %{__make}
 

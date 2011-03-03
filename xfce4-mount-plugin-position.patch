@@ -1,0 +1,67 @@
+diff -ur xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.c xfce4-mount-plugin-0.5.5-position/panel-plugin/mount-plugin.c
+--- xfce4-mount-plugin-0.5.5/panel-plugin/mount-plugin.c	2011-03-03 20:42:54.618752071 +0100
++++ xfce4-mount-plugin-0.5.5-position/panel-plugin/mount-plugin.c	2011-03-03 20:41:59.402752071 +0100
+@@ -357,6 +357,54 @@
+ 
+ }
+ 
++static void
++mounter_position_menu (GtkMenu *menu,
++                     gint *x,
++                     gint *y,
++                     gboolean *push_in,
++                     t_mounter *mounter)
++{
++  GtkWidget *button;
++  GtkRequisition requisition;
++  GtkOrientation orientation;
++
++  button = mounter->button;
++  orientation = xfce_panel_plugin_get_orientation (mounter->plugin);
++  gtk_widget_size_request (GTK_WIDGET (menu), &requisition);
++  gdk_window_get_origin (GTK_WIDGET (mounter->plugin)->window, x, y);
++
++  switch (orientation)
++    {
++    case GTK_ORIENTATION_HORIZONTAL:
++      if (*y + button->allocation.height + requisition.height > gdk_screen_height ())
++        /* Show menu above */
++        *y -= requisition.height;
++      else
++        /* Show menu below */
++        *y += button->allocation.height;
++
++      if (*x + requisition.width > gdk_screen_width ())
++        /* Adjust horizontal position */
++        *x = gdk_screen_width () - requisition.width;
++      break;
++
++    case GTK_ORIENTATION_VERTICAL:
++      if (*x + button->allocation.width + requisition.width > gdk_screen_width ())
++        /* Show menu on the right */
++        *x -= requisition.width;
++      else
++        /* Show menu on the left */
++        *x += button->allocation.width;
++
++      if (*y + requisition.height > gdk_screen_height ())
++        /* Adjust vertical position */
++        *y = gdk_screen_height () - requisition.height;
++      break;
++
++    default:
++      break;
++    }
++}
+ 
+ static gboolean
+ on_button_press (GtkWidget *widget, GdkEventButton *event, t_mounter *mounter)
+@@ -366,7 +414,7 @@
+     {
+ 
+         mounter_refresh (mounter); /* refreshs infos regarding mounts data */
+-        gtk_menu_popup (GTK_MENU(mounter->menu), NULL, NULL, NULL, NULL, 0,
++        gtk_menu_popup (GTK_MENU(mounter->menu), NULL, NULL, (GtkMenuPositionFunc)mounter_position_menu, mounter, 0,
+                         event->time);
+         return TRUE;
+     }
