@@ -1,16 +1,15 @@
 --- xfce4-mount-plugin-0.5.5/panel-plugin/devices.c~	2010-11-13 20:45:44.969354996 +0100
 +++ xfce4-mount-plugin-0.5.5/panel-plugin/devices.c	2010-11-13 21:02:11.907383494 +0100
-@@ -295,7 +295,8 @@
-             retval = ERROR;
-         }
+@@ -354,7 +354,7 @@
  
--        if (disk_check_mounted(pdisk->device))
-+        if (disk_check_mounted(pdisk->device) ||
-+		disk_check_mounted(pdisk->mount_point))
-             retval = ERROR;
- 
-         g_free (cmd);
-@@ -331,7 +331,7 @@
+         if (show_message_dialog && !eject && val == TRUE && exit_status == 0)
+             xfce_dialog_show_info (NULL, NULL, _("The device \"%s\" should be removable safely now."), pdisk->device);
+-        if (show_message_dialog && disk_check_mounted(pdisk->device))
++        if (show_message_dialog && (disk_check_mounted(pdisk->device) || disk_check_mounted(pdisk->mount_point)))
+             xfce_dialog_show_error (NULL, NULL, _("An error occurred. The device \"%s\" should not be removed!"), pdisk->device);
+     }
+ }
+@@ -400,7 +400,7 @@
      for (pfstab = getfsent(); pfstab!=NULL; pfstab = getfsent())
      {
          has_valid_mount_device =
