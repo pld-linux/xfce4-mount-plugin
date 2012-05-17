@@ -57,6 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/xfce4/panel/plugins/*.la
 %find_lang %{name}
 
 %clean
@@ -71,6 +72,6 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README TODO
-#%attr(755,root,root) %{_libdir}/xfce4/panel-plugins/xfce4-mount-plugin
-#%{_datadir}/xfce4/panel-plugins/xfce4-mount-plugin.desktop
+%attr(755,root,root) %{_libdir}/xfce4/panel/plugins/libmount.so
+%{_datadir}/xfce4/panel/plugins/xfce4-mount-plugin.desktop
 %{_iconsdir}/hicolor/*/apps/*.*
