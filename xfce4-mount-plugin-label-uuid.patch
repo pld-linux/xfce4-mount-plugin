@@ -9,12 +9,3 @@
              xfce_dialog_show_error (NULL, NULL, _("An error occurred. The device \"%s\" should not be removed!"), pdisk->device);
      }
  }
-@@ -400,7 +400,7 @@
-     for (pfstab = getfsent(); pfstab!=NULL; pfstab = getfsent())
-     {
-         has_valid_mount_device =
--                        g_str_has_prefix(pfstab->fs_spec, "/dev/") ||  g_str_has_prefix(pfstab->fs_spec, "UUID=");
-+                        g_str_has_prefix(pfstab->fs_spec, "/dev/") || g_str_has_prefix(pfstab->fs_spec, "UUID=") || g_str_has_prefix(pfstab->fs_spec, "LABEL=");
- 
-         if (include_NFSs)
-             has_valid_mount_device = has_valid_mount_device |
