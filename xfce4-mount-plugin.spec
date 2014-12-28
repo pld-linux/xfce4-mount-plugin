@@ -11,7 +11,7 @@ Patch0:		%{name}-label-uuid.patch
 URL:		http://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin
 BuildRequires:	autoconf >= 2.63
 BuildRequires:	automake
-BuildRequires:	gettext-devel
+BuildRequires:	gettext-tools
 BuildRequires:	intltool
 BuildRequires:	libtool
 BuildRequires:	libxfce4ui-devel
